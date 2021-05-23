@@ -26,7 +26,7 @@ def show_stats(stats_2019, stats_2020):
 #Извлекает посты со страницы FB (pages_count пролистываний) в файл out_file
 def exract_posts(page_name, out_file, pages_count):
     with open(out_file, "w", errors="ignore") as out:
-        posts = get_posts(page_name, pages_count)
+        posts = get_posts(page_name, pages=pages_count)
         #Проход по постам и извлечение только необходимых полей у постов
         for p in posts:
             # ФОрмирование объекта JSON для последующего сохр в файл с имененм save_to
