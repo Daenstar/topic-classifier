@@ -10,6 +10,7 @@ from LDA_classifier import *
 
 
 
+
 # import nltk
 #Вывод аналитики за 2019 и 2020 год в тектовом виде
 def show_stats(stats_2019, stats_2020):
