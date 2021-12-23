@@ -1,7 +1,7 @@
 import json
 import collections
 from nltk.util import ngrams
-
+import nltk
 
 class DataAnalyser:
     def __init__(self, topics_file):
@@ -48,7 +48,6 @@ class DataAnalyser:
                 if (self.__is_keyword_found(keyword, normalized_post)):
                     #topic detected
                     return topic_name
-
         return 'Other'
 
     def predict_topic_all_posts(self, posts):
@@ -59,12 +58,11 @@ class DataAnalyser:
 
 
     #Считает долю постов с определенной тематикой среди всех постов за указанный год
-    #+популярность тематики (лайки+shared) в указанный год
+    #+относительную популярность тематики: (лайки+shared) для темы / кол-во постов этой темы
     def get_year_common_stats(self, posts, year):
         #постов за год
         total = 0
-        #TOTAL_LS = 0
-        #total_LS = 0
+
         stats = collections.defaultdict(lambda: collections.defaultdict(int))
         for post in posts:
 
@@ -76,7 +74,30 @@ class DataAnalyser:
                 stats[post['topic']]['LS'] += post['likes'] + post['shares']
         for topic in stats.keys():
             stats[topic]['percent'] = stats[topic]['count'] / total * 100
-            stats[topic]['LS_percent'] = stats[topic]['LS'] / stats[topic]['count']
-       # print(TOTAL_LS)
+            stats[topic]['LikeShares_coeff'] = stats[topic]['LS'] / stats[topic]['count']
+           # print(TOTAL_LS)
         return stats
+
+    def get_most_liked_posts(self, posts, year):
+
+        posts = [post for post in posts if str(year) in post['time']]
+        results = sorted(posts, key=lambda x: x['likes'], reverse=True)
+        results = [post['text']+':'+str(post['likes']) for post in results]
+        return results[:3]
+
+    def get_most_shared_posts(self, posts, year):
+
+        posts = [post for post in posts if str(year) in post['time']]
+        results = sorted(posts, key=lambda x: x['shares'], reverse=True)
+        results = [post['text'] + ':' + str(post['shares']) for post in results]
+        return results[:1]
+
+    def get_count_of_words(self,posts, tokenized=False):
+        count = 0
+        for post in posts:
+            if(not tokenized):
+                count += len(nltk.word_tokenize (post["text"]))
+            else:
+                count += len(post["text"])
+        return count
 
